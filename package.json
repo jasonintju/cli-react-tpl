@@ -1,9 +1,9 @@
 {
   "name": "cli-react-tpl",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Create a React Project boilerplate",
   "bin": {
-    "cli-react-tpl": "bin/cli.js"
+    "cli-react-tpl": "bin/cli-react-tpl.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
