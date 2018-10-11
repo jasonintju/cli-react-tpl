@@ -1,7 +1,7 @@
 {
-  "name": "cli-learning",
+  "name": "cli-react-tpl",
   "version": "1.0.0",
-  "description": "learn to write a cli",
+  "description": "Create a React Project boilerplate",
   "bin": {
     "cli": "bin/cli.js"
   },
@@ -17,8 +17,10 @@
     "download-git-repo": "^1.1.0",
     "fs-extra": "^7.0.0",
     "glob": "^7.1.3",
+    "handlebars": "^4.0.12",
     "inquirer": "^6.2.0",
     "log-symbols": "^2.2.0",
+    "metalsmith": "^2.3.0",
     "ora": "^3.0.0"
   }
 }

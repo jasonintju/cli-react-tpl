@@ -1,11 +1,13 @@
 const commander = require('commander');
 const chalk = require('chalk');
 const logSymbols = require('log-symbols');
-// const inquirer = require('inquirer');
+const inquirer = require('inquirer');
 const path = require('path');
 const fs = require('fs-extra');
 const glob = require('glob');
 const download = require('../lib/download');
+const generate = require('../lib/generate');
+const tplGitUrl = 'jasonintju/react-template';
 
 commander.usage('<project-name>').parse(process.argv);
 
@@ -17,22 +19,8 @@ if (!projectName) {
   return;
 }
 
-// inquirer
-//   .prompt([
-//     {
-//       name: 'projectName',
-//       message: '请输入项目名称',
-//       default: 'aaaa'
-//     }
-//   ])
-//   .then(answers => {
-//     console.log(chalk.yellow(answers.projectName));
-//   });
-
-// 在当前目录下创建以 project-name 为名称的工程
-// 如果当前目录下已存在同名工程，则提示 “项目已存在”
+// 在当前目录下创建以 project-name 为名称的工程，如果当前目录下已存在同名工程，则提示 “项目已存在”
 const list = glob.sync('*'); // 遍历当前目录
-
 const sameNameDir = list.filter(file => {
   const filePath = path.join(process.cwd(), file);
   const isDir = fs.statSync(filePath).isDirectory();
@@ -43,22 +31,34 @@ if (sameNameDir.length !== 0) {
   return;
 }
 
-createNewProject();
+inquirer
+  .prompt([
+    {
+      name: 'projectVersion',
+      message: 'version',
+      default: '1.0.0'
+    },
+    {
+      name: 'projectDescription',
+      message: 'description',
+      default: 'a new React project'
+    }
+  ])
+  .then(metadata => {
+    metadata.projectName = projectName;
+    createNewProject(metadata);
+  });
 
-function createNewProject() {
+function createNewProject(metadata) {
   const cwd = process.cwd();
   const rootDir = path.join(cwd, projectName);
-  download(cwd)
-    .then(target => {
-      fs.copy(target, rootDir, err => {
-        if (err) {
-          console.log(logSymbols.error, chalk.red(err));
-          return;
-        }
-        fs.remove(target);
-        console.log(logSymbols.success, chalk.green('项目创建成功:)'));
-        console.log(chalk.yellow(`cd ${projectName}\nnpm install\nnpm run dev`));
-      });
+  download(tplGitUrl, rootDir)
+    .then(tplDir => {
+      return generate(metadata, tplDir, rootDir);
     })
-    .catch(err => console.log(logSymbols.error, chalk.red(err)));
+    .then(() => {
+      console.log(logSymbols.success, chalk.green('项目创建成功:)'));
+      console.log(chalk.yellow(`cd ${projectName}\nnpm install\nnpm run dev`));
+    })
+    .catch(err => console.error(err));
 }
